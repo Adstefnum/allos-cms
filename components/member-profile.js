@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,58 +19,19 @@ import {
   Edit
 } from "lucide-react";
 
-// Mock data for detailed member information
-const mockMemberDetails = {
-  1: {
-    id: 1,
-    name: "John Smith",
-    email: "john.smith@email.com",
-    phone: "(555) 123-4567",
-    address: "123 Main St, Anytown, ST 12345",
-    joinDate: "2022-03-15",
-    lastAttendance: "2024-05-26",
-    lastContact: "2024-05-28",
-    assignedTo: "Pastor Mike",
-    status: "Active",
-    notes: [
-      {
-        id: 1,
-        date: "2024-05-28",
-        author: "Pastor Mike",
-        content: "Called to check in after missing last week. He was traveling for work. Very engaged when present."
-      },
-      {
-        id: 2,
-        date: "2024-05-20",
-        author: "Elder Grace",
-        content: "Volunteered to help with upcoming church event. Showed great enthusiasm."
-      },
-      {
-        id: 3,
-        date: "2024-05-10",
-        author: "Pastor Mike",
-        content: "Had a great conversation about his spiritual growth. Recommended some reading materials."
-      }
-    ],
-    attendanceHistory: [
-      { date: "2024-05-26", present: true },
-      { date: "2024-05-19", present: false },
-      { date: "2024-05-12", present: true },
-      { date: "2024-05-05", present: true },
-      { date: "2024-04-28", present: true },
-      { date: "2024-04-21", present: false },
-      { date: "2024-04-14", present: true },
-      { date: "2024-04-07", present: true }
-    ]
-  }
-};
-
-export default function MemberProfile() {
-  const { id } = useParams();
+export default function MemberProfile({ memberId }) {
   const [newNote, setNewNote] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [member, setMember] = useState(null);
 
-  const member = mockMemberDetails[Number(id)];
+  useEffect(() => {
+    const fetchMember = async () => {
+      const res = await fetch(`/api/members/${memberId}`);
+      const data = await res.json();
+      setMember(data);
+    }
+    fetchMember();
+  }, [memberId]);
 
   if (!member) {
     return (
@@ -89,9 +49,11 @@ export default function MemberProfile() {
     );
   }
 
-  const attendanceRate = Math.round(
-    (member.attendanceHistory.filter(a => a.present).length / member.attendanceHistory.length) * 100
-  );
+  const attendanceRate = member.attendanceHistory && member.attendanceHistory.length > 0
+    ? Math.round(
+        (member.attendanceHistory.filter(a => a.present).length / member.attendanceHistory.length) * 100
+      )
+    : 0;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -107,6 +69,7 @@ export default function MemberProfile() {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
@@ -248,8 +211,8 @@ export default function MemberProfile() {
                       </div>
 
                       {/* Existing notes */}
-                      {member.notes.map((note) => (
-                        <div key={note.id} className="border rounded-lg p-4">
+                      {member.notes && member.notes.map((note) => (
+                        <div key={note._id || note.id} className="border rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-medium text-blue-600">{note.author}</span>
                             <span className="text-sm text-gray-500">{formatDate(note.date)}</span>
@@ -272,7 +235,7 @@ export default function MemberProfile() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {member.attendanceHistory.map((record, index) => (
+                      {member.attendanceHistory && member.attendanceHistory.map((record, index) => (
                         <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                           <span className="font-medium text-gray-900">
                             {formatDate(record.date)}
