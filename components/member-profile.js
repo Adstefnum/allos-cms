@@ -77,6 +77,15 @@ export default function MemberProfile({ memberId }) {
     });
   };
 
+  const handleSaveNote = async () => {
+    const res = await fetch(`/api/members/${memberId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes: [...member.notes, { content: newNote, date: new Date().toISOString() }] })
+    });
+    const data = await res.json();
+    setMember(data);
+    setNewNote("");
+  }
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-6xl mx-auto">
@@ -187,10 +196,7 @@ export default function MemberProfile({ memberId }) {
                         <MessageSquare className="mr-2 h-5 w-5 text-blue-600" />
                         Follow-up Notes
                       </span>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Note
-                      </Button>
+                      
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -205,7 +211,7 @@ export default function MemberProfile({ memberId }) {
                           onChange={(e) => setNewNote(e.target.value)}
                           className="mt-2"
                         />
-                        <Button size="sm" className="mt-2 bg-blue-600 hover:bg-blue-700">
+                        <Button onClick={handleSaveNote} size="sm" className="mt-2 bg-blue-600 hover:bg-blue-700">
                           Save Note
                         </Button>
                       </div>

@@ -15,3 +15,11 @@ export async function GET(req, { params }) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 } 
+
+export async function PATCH(req, { params }) {
+  const { id } = params;
+  await connectMongo();
+  const body = await req.json();
+  const member = await Member.findByIdAndUpdate(id, body, { new: true });
+  return NextResponse.json(member, { status: 200 });
+}
