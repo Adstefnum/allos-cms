@@ -24,10 +24,10 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Invalid CSV format' }, { status: 400 });
   }
   const toInsert = records
-    .filter(row => row.name && row.phone)
+    .filter(row => row.name)
     .map(row => ({
       name: row.name,
-      phone: row.phone,
+      phone: row.phone && row.phone.trim() ? row.phone : 'no phone number',
       status: 'Active',
       lastAttendance: null,
       joinDate: null
