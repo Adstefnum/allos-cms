@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
 import config from "@/config";
-import cron from "node-cron";
-import { updateData } from "@/libs/update";
+// import cron from "node-cron";
+// import { updateData } from "@/libs/update";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -19,13 +19,13 @@ export const viewport = {
 // You can override them in each page passing params to getSOTags() function.
 export const metadata = getSEOTags();
 
-if (typeof window === "undefined") {
-	// Every Sunday at 3pm
-	cron.schedule("0 15 * * 0", async () => {
-		console.log("[CRON] Running weekly member status update...");
-		await updateData();
-	});
-}
+// if (typeof window === "undefined") {
+// 	// Every Sunday at 3pm
+// 	cron.schedule("0 15 * * 0", async () => {
+// 		console.log("[CRON] Running weekly member status update...");
+// 		await updateData();
+// 	});
+// }
 
 export default function RootLayout({ children }) {
 	return (
