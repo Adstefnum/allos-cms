@@ -23,7 +23,7 @@ const memberSchema = new mongoose.Schema(
     email: { type: String, lowercase: true, trim: true },
     phone: { type: String },
     address: { type: String },
-    joinDate: { type: String, required: true },
+    joinDate: { type: String, default: null },
     lastAttendance: { type: String },
     lastContact: { type: String },
     assignedTo: { type: String },

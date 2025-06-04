@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UsersIcon, CalendarIcon, PhoneIcon } from "@/components/icons"
@@ -7,6 +7,7 @@ import { StatsCard } from "@/components/stats-card"
 import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 import { MembersDataTable } from "@/components/members-data-table"
 import apiClient from "@/libs/api";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const [data, setData] = useState({
@@ -15,6 +16,9 @@ export default function Dashboard() {
     followUpCount: 0,
     members: []
   });
+  const [showImport, setShowImport] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const fileInputRef = useRef();
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -29,7 +33,21 @@ export default function Dashboard() {
       });
     }
     fetchDashboardData();
-  }, []);
+  }, [importResult]);
+
+  const handleImportCSV = async (e) => {
+    e.preventDefault();
+    if (!fileInputRef.current.files[0]) return;
+    const formData = new FormData();
+    formData.append('file', fileInputRef.current.files[0]);
+    const res = await fetch('/api/members/import-csv', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+    setImportResult(result);
+    setShowImport(false);
+  };
 
   const { count, presentCount, followUpCount, members } = data;
 
@@ -37,10 +55,33 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Church Member Dashboard</h1>
-          <p className="text-gray-600">Manage and track church member engagement</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Church Member Dashboard</h1>
+            <p className="text-gray-600">Manage and track church member engagement</p>
+          </div>
+          <Button onClick={() => setShowImport(true)} className="bg-blue-600 text-white">Import CSV</Button>
         </div>
+        {importResult && (
+          <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">
+            Imported {importResult.createdCount} members successfully.
+          </div>
+        )}
+        {showImport && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4">Import Members from CSV</h2>
+              <form onSubmit={handleImportCSV}>
+                <input type="file" accept=".csv" ref={fileInputRef} required className="mb-4" />
+                <div className="flex gap-2">
+                  <Button type="submit" className="bg-blue-600 text-white">Upload</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowImport(false)}>Cancel</Button>
+                </div>
+              </form>
+              <div className="text-xs text-gray-500 mt-2">CSV columns: <b>name</b>, <b>phone</b></div>
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <StatsCard
