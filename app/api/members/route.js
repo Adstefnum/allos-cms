@@ -46,12 +46,15 @@ export async function POST(request) {
     const today = new Date().toISOString().split('T')[0];
     const memberData = {
       ...body,
-      joinDate: today,
-      lastAttendance: today,
-      attendanceHistory: [{
-        date: today,
-        present: true
-      }]
+      joinDate: body.joinDate || today,
+      lastAttendance: body.lastAttendance || today,
+      status: body.status || 'New',
+      attendanceHistory: body.attendanceHistory || [
+        {
+          date: body.lastAttendance || today,
+          present: true
+        }
+      ]
     };
     const member = await Member.create(memberData);
     return NextResponse.json(member);

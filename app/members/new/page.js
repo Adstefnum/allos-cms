@@ -18,6 +18,8 @@ export default function NewMemberPage() {
     phone: "",
     address: "",
     joinDate: today,
+    status: "",
+    lastAttendance: ""
   });
 
   const handleChange = (e) => {
@@ -38,12 +40,16 @@ export default function NewMemberPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Only send non-empty fields
+      const dataToSend = Object.fromEntries(
+        Object.entries(formData).filter(([_, v]) => v !== "")
+      );
       const response = await fetch('/api/members', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (response.ok) {
@@ -122,6 +128,34 @@ export default function NewMemberPage() {
                   value={formData.joinDate}
                   onChange={handleChange}
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status (optional)</Label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                >
+                  <option value="">-- Select Status --</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Needs Follow-up">Needs Follow-up</option>
+                  <option value="New">New</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastAttendance">Last Attendance (optional)</Label>
+                <Input
+                  id="lastAttendance"
+                  name="lastAttendance"
+                  type="date"
+                  value={formData.lastAttendance}
+                  onChange={handleChange}
                 />
               </div>
 
