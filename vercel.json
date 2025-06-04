@@ -1,5 +1,5 @@
 {
-  "cron": [
+  "crons": [
     {
       "path": "/api/members/update-status",
       "schedule": "0 15 * * 0"
