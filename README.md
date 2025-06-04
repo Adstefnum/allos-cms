@@ -1,6 +1,6 @@
-# ShipFast — Javascript
+# allosCrm — Javascript
 
-Hey maker 👋 it's Marc from [ShipFast](https://shipfa.st/docs). Let's get your startup off the ground, FAST ⚡️
+Hey maker 👋 it's Marc from [allosCrm](https://shipfa.st/docs). Let's get your startup off the ground, FAST ⚡️
 
 <sub>**Watch/Star the repo to be notified when updates are pushed**</sub>
 
@@ -33,6 +33,6 @@ Let's ship it, FAST ⚡️
 -   Get insights on your customers
 -   Make data-driven decisions
 
-ShipFast members get 30% OFF on all plans! 🎁
+allosCrm members get 30% OFF on all plans! 🎁
 
 ![datafast](https://github.com/user-attachments/assets/085453a6-8a66-45be-b7ea-a7a08e856ed8)

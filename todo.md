@@ -1,0 +1,3 @@
+- add ability to edit members
+- new members should also have follow up tag so they are counted in summary and show up o the tag filtering. maybe not
+- should notes auto dictate last contact
