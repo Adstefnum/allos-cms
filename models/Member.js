@@ -4,7 +4,6 @@ import toJSON from "./plugins/toJSON";
 const noteSchema = new mongoose.Schema(
   {
     date: { type: String, required: true },
-    author: { type: String, required: true },
     content: { type: String, required: true },
   },
   { _id: false }
