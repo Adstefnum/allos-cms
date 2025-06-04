@@ -109,7 +109,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Follow-Up Required</CardTitle>
                 <CardDescription>
-                  Members who haven't attended recently or need personal contact.
+                  Members who haven&apos;t attended recently or need personal contact.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -123,4 +123,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-};
+}
