@@ -20,10 +20,10 @@ const attendanceSchema = new mongoose.Schema(
 const memberSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, lowercase: true, trim: true },
+    email: { type: String, lowercase: true, trim: true },
     phone: { type: String },
     address: { type: String },
-    joinDate: { type: String },
+    joinDate: { type: String, required: true },
     lastAttendance: { type: String },
     lastContact: { type: String },
     assignedTo: { type: String },

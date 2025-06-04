@@ -11,11 +11,13 @@ import { ArrowLeft } from "lucide-react";
 
 export default function NewMemberPage() {
   const router = useRouter();
+  const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
+    joinDate: today,
   });
 
   const handleChange = (e) => {
@@ -80,14 +82,13 @@ export default function NewMemberPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email (optional)</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
                 />
               </div>
 
@@ -103,14 +104,26 @@ export default function NewMemberPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Address (optional)</Label>
                 <Input
                   id="address"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                 />
-              </div> 
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="joinDate">Join Date</Label>
+                <Input
+                  id="joinDate"
+                  name="joinDate"
+                  type="date"
+                  value={formData.joinDate}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
               <Button type="submit" className="w-full">
                 Add Member
