@@ -17,10 +17,12 @@ import { Search } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import clsx from "clsx"
+import { Switch } from "@/components/ui/switch"
 
 export function MembersDataTable({ filter = "all", members = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
+  const [hideInactive, setHideInactive] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,6 +39,9 @@ export function MembersDataTable({ filter = "all", members = [] }) {
   // Filtering logic
   const filteredMembers = useMemo(() => {
     let filtered = [...localMembers];
+    if (hideInactive) {
+      filtered = filtered.filter(m => m.status !== "Inactive");
+    }
     if (filter === "new") {
       filtered = filtered.filter(m => m.status === "New");
     } else if (filter === "followup") {
@@ -51,7 +56,7 @@ export function MembersDataTable({ filter = "all", members = [] }) {
       );
     }
     return filtered;
-  }, [localMembers, filter, searchQuery]);
+  }, [localMembers, filter, searchQuery, hideInactive]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "Never";
@@ -113,7 +118,7 @@ export function MembersDataTable({ filter = "all", members = [] }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -123,6 +128,16 @@ export function MembersDataTable({ filter = "all", members = [] }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={hideInactive}
+            onCheckedChange={setHideInactive}
+            id="hide-inactive-toggle"
+          />
+          <label htmlFor="hide-inactive-toggle" className="text-sm text-gray-700 select-none cursor-pointer">
+            Hide Inactive
+          </label>
         </div>
         <Link href="/members/new">
           <Button className="ml-4">
