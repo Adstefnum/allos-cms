@@ -20,11 +20,16 @@ export default function Dashboard() {
   const [importResult, setImportResult] = useState(null);
   const [hideInactive, setHideInactive] = useState(true);
   const fileInputRef = useRef();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchDashboardData() {
+      setLoading(true);
       const res = await fetch('/api/members');
-      if (!res.ok) return;
+      if (!res.ok) {
+        setLoading(false);
+        return;
+      }
       const responseData = await res.json();
       setData({
         count: responseData?.count || 0,
@@ -32,6 +37,7 @@ export default function Dashboard() {
         followUpCount: responseData?.followUpCount || 0,
         members: responseData?.members || []
       });
+      setLoading(false);
     }
     fetchDashboardData();
   }, [importResult]);
@@ -124,7 +130,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="all" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
+                  <MembersDataTable filter="all" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
                 </Suspense>
               </CardContent>
             </Card>
@@ -139,7 +145,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="new" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
+                  <MembersDataTable filter="new" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
                 </Suspense>
               </CardContent>
             </Card>
@@ -154,7 +160,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="followup" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
+                  <MembersDataTable filter="followup" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
                 </Suspense>
               </CardContent>
             </Card>

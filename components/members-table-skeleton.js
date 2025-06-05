@@ -11,20 +11,19 @@ import {
 export function MembersTableSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
         <Skeleton className="h-10 w-[250px]" />
         <Skeleton className="h-10 w-[100px]" />
+        <Skeleton className="h-10 w-[120px]" />
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>
-              <TableHead>Member</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Attended</TableHead>
-              <TableHead>Last Contact</TableHead>
-              <TableHead>Assigned To</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="min-w-[260px] px-6 py-4">Member</TableHead>
+              <TableHead className="min-w-[140px] px-6 py-4">Last Attended</TableHead>
+              <TableHead className="min-w-[140px] px-6 py-4">Last Contact</TableHead>
+              <TableHead className="min-w-[160px] px-6 py-4">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -32,20 +31,28 @@ export function MembersTableSkeleton() {
               .fill(null)
               .map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
+                  <TableCell className="px-6 py-4 align-middle">
+                    <div className="flex items-center gap-4 min-w-[220px]">
                       <Skeleton className="h-9 w-9 rounded-full" />
-                      <div className="space-y-1">
+                      <div className="flex flex-col min-w-[120px]">
                         <Skeleton className="h-4 w-[150px]" />
                         <Skeleton className="h-3 w-[100px]" />
                       </div>
+                      <Skeleton className="h-7 w-[100px] rounded" />
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-[70px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[90px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[90px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
-                  <TableCell><Skeleton className="h-9 w-[60px]" /></TableCell>
+                  <TableCell className="px-6 py-4 align-middle min-w-[120px]">
+                    <Skeleton className="h-4 w-[90px]" />
+                  </TableCell>
+                  <TableCell className="px-6 py-4 align-middle min-w-[120px]">
+                    <Skeleton className="h-4 w-[90px]" />
+                  </TableCell>
+                  <TableCell className="px-6 py-4 align-middle min-w-[140px]">
+                    <div className="flex gap-2">
+                      <Skeleton className="h-9 w-[40px]" />
+                      <Skeleton className="h-9 w-[60px]" />
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

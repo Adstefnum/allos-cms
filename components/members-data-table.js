@@ -18,8 +18,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import clsx from "clsx"
 import { Switch } from "@/components/ui/switch"
+import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 
-export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive }) {
+export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
   const router = useRouter();
@@ -114,6 +115,10 @@ export function MembersDataTable({ filter = "all", members = [], hideInactive = 
     });
     setLocalMembers(prev => prev.map(m => (m._id || m.id) === id ? { ...m, status } : m));
   };
+
+  if (loading) {
+    return <MembersTableSkeleton />;
+  }
 
   return (
     <div className="space-y-4">
