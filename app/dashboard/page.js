@@ -18,6 +18,7 @@ export default function Dashboard() {
   });
   const [showImport, setShowImport] = useState(false);
   const [importResult, setImportResult] = useState(null);
+  const [hideInactive, setHideInactive] = useState(true);
   const fileInputRef = useRef();
 
   useEffect(() => {
@@ -49,7 +50,10 @@ export default function Dashboard() {
     setShowImport(false);
   };
 
-  const { count, presentCount, followUpCount, members } = data;
+  const { presentCount, followUpCount, members } = data;
+  const activeMembersCount = members.filter(m => m.status !== 'Inactive').length;
+  const totalMembersCount = members.length;
+  const displayedCount = hideInactive ? activeMembersCount : totalMembersCount;
 
   return (
     <div className="min-h-screen bg-white p-6">
@@ -82,12 +86,11 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <StatsCard
             title="Total Members"
-            value={count}
-            description="Active members in database"
+            value={displayedCount}
+            description={hideInactive ? "Active members in database" : "All members in database"}
             icon={<UsersIcon className="h-4 w-4 text-blue-600" />}
           />
           <StatsCard
@@ -103,7 +106,6 @@ export default function Dashboard() {
             icon={<PhoneIcon className="h-4 w-4 text-blue-600" />}
           />
         </div>
-        
         <Tabs defaultValue="all" className="space-y-4">
           <div className="flex items-center justify-between">
             <TabsList>
@@ -112,7 +114,6 @@ export default function Dashboard() {
               <TabsTrigger value="followup">Needs Follow-Up</TabsTrigger>
             </TabsList>
           </div>
-          
           <TabsContent value="all" className="space-y-4">
             <Card>
               <CardHeader>
@@ -123,12 +124,11 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="all" members={members} />
+                  <MembersDataTable filter="all" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
                 </Suspense>
               </CardContent>
             </Card>
           </TabsContent>
-          
           <TabsContent value="new" className="space-y-4">
             <Card>
               <CardHeader>
@@ -139,28 +139,27 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="new" members={members} />
+                  <MembersDataTable filter="new" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
                 </Suspense>
               </CardContent>
             </Card>
           </TabsContent>
-          
           <TabsContent value="followup" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Follow-Up Required</CardTitle>
                 <CardDescription>
-                  Members who haven&apos;t attended recently or need personal contact.
+                  Members who haven't attended recently or need personal contact.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="followup" members={members} />
+                  <MembersDataTable filter="followup" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} />
                 </Suspense>
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs> 
+        </Tabs>
       </div>
     </div>
   );

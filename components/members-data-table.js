@@ -19,10 +19,9 @@ import { useRouter } from "next/navigation"
 import clsx from "clsx"
 import { Switch } from "@/components/ui/switch"
 
-export function MembersDataTable({ filter = "all", members = [] }) {
+export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
-  const [hideInactive, setHideInactive] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
