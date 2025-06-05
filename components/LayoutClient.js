@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { Crisp } from "crisp-sdk-web";
 import { SessionProvider } from "next-auth/react";
 import NextTopLoader from "nextjs-toploader";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/toaster";
 import { Tooltip } from "react-tooltip";
 import config from "@/config";
 
@@ -62,11 +62,7 @@ const ClientLayout = ({ children }) => {
         {children}
 
         {/* Show Success/Error messages anywhere from the app with toast() */}
-        <Toaster
-          toastOptions={{
-            duration: 3000,
-          }}
-        />
+        <Toaster />
 
         {/* Show tooltips if any JSX elements has these 2 attributes: data-tooltip-id="tooltip" data-tooltip-content="" */}
         <Tooltip
