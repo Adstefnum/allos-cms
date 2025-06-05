@@ -1,6 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ReactNode } from "react"
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function StatsCard({ title, value, description, icon }) {
   return (

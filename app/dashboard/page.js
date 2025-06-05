@@ -6,9 +6,8 @@ import { UsersIcon, CalendarIcon, PhoneIcon } from "@/components/icons"
 import { StatsCard } from "@/components/stats-card"
 import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 import { MembersDataTable } from "@/components/members-data-table"
-import apiClient from "@/libs/api";
 import { Button } from "@/components/ui/button";
-import NewMemberForm from "../../components/NewMemberForm";
+import NewMemberForm from "@/components/NewMemberForm";
 
 export default function Dashboard() {
   const [data, setData] = useState({
@@ -223,7 +222,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Follow-Up Required</CardTitle>
                 <CardDescription>
-                  Members who haven't attended recently or need personal contact.
+                  Members who haven&apos;t attended recently or need personal contact.
                 </CardDescription>
               </CardHeader>
               <CardContent>

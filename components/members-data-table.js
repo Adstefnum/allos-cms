@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { Search } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useRouter } from "next/navigation"
 import clsx from "clsx"
 import { Switch } from "@/components/ui/switch"
 import { MembersTableSkeleton } from "@/components/members-table-skeleton"
@@ -23,7 +22,6 @@ import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false, onDelete, onStatusChange, setShowImport, setShowNewMember }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
-  const router = useRouter();
 
   useEffect(() => {
     setLocalMembers(members);
@@ -66,22 +64,7 @@ export function MembersDataTable({ filter = "all", members = [], hideInactive = 
       day: 'numeric',
       year: 'numeric' 
     }).format(date);
-  };
-
-  const getStatusBadge = (status) => {
-    switch(status) {
-      case 'Active':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
-      case 'Inactive':
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Inactive</Badge>
-      case 'Needs Follow-up':
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Needs Follow-up</Badge>
-      case 'New':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">New</Badge>
-      default:
-        return <Badge variant="outline">Unknown</Badge>
-    }
-  };
+  }; 
 
   const getInitials = (name) => {
     if (!name) return "?";
