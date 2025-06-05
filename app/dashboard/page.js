@@ -8,6 +8,7 @@ import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 import { MembersDataTable } from "@/components/members-data-table"
 import apiClient from "@/libs/api";
 import { Button } from "@/components/ui/button";
+import NewMemberForm from "../../components/NewMemberForm";
 
 export default function Dashboard() {
   const [data, setData] = useState({
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [hideInactive, setHideInactive] = useState(true);
   const fileInputRef = useRef();
   const [loading, setLoading] = useState(true);
+  const [showNewMember, setShowNewMember] = useState(false);
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -92,6 +94,20 @@ export default function Dashboard() {
     });
   };
 
+  const handleNewMember = (newMember) => {
+    setData(prev => {
+      const newMembers = [newMember, ...prev.members];
+      const presentCount = newMembers.filter(m => m.status !== 'Inactive' && m.attendanceHistory?.some(a => a.present)).length;
+      const followUpCount = newMembers.filter(m => m.status === 'Needs Follow-up').length;
+      return {
+        ...prev,
+        members: newMembers,
+        presentCount,
+        followUpCount,
+      };
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -123,6 +139,7 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+        <NewMemberForm open={showNewMember} onClose={() => setShowNewMember(false)} onCreate={handleNewMember} />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <StatsCard
             title="Total Members"
@@ -169,6 +186,8 @@ export default function Dashboard() {
                     loading={loading}
                     onDelete={handleMemberDelete}
                     onStatusChange={handleStatusChange}
+                    setShowImport={setShowImport}
+                    setShowNewMember={setShowNewMember}
                   />
                 </Suspense>
               </CardContent>
@@ -192,6 +211,8 @@ export default function Dashboard() {
                     loading={loading}
                     onDelete={handleMemberDelete}
                     onStatusChange={handleStatusChange}
+                    setShowImport={setShowImport}
+                    setShowNewMember={setShowNewMember}
                   />
                 </Suspense>
               </CardContent>
@@ -215,6 +236,8 @@ export default function Dashboard() {
                     loading={loading}
                     onDelete={handleMemberDelete}
                     onStatusChange={handleStatusChange}
+                    setShowImport={setShowImport}
+                    setShowNewMember={setShowNewMember}
                   />
                 </Suspense>
               </CardContent>

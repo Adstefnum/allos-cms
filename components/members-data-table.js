@@ -20,7 +20,7 @@ import clsx from "clsx"
 import { Switch } from "@/components/ui/switch"
 import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 
-export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false, onDelete, onStatusChange }) {
+export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false, onDelete, onStatusChange, setShowImport, setShowNewMember }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
   const router = useRouter();
@@ -147,11 +147,7 @@ export function MembersDataTable({ filter = "all", members = [], hideInactive = 
             Hide Inactive
           </label>
         </div>
-        <Link href="/members/new">
-          <Button className="ml-4">
-            Add Member
-          </Button>
-        </Link>
+        <Button onClick={() => setShowImport(false) || setShowNewMember(true)} className="bg-blue-600 text-white">Add Member</Button>
       </div>
       
       <div className="rounded-md border overflow-x-auto">
