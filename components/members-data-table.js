@@ -20,7 +20,7 @@ import clsx from "clsx"
 import { Switch } from "@/components/ui/switch"
 import { MembersTableSkeleton } from "@/components/members-table-skeleton"
 
-export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false }) {
+export function MembersDataTable({ filter = "all", members = [], hideInactive = true, setHideInactive, loading = false, onDelete, onStatusChange }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [localMembers, setLocalMembers] = useState(members);
   const router = useRouter();
@@ -102,18 +102,22 @@ export function MembersDataTable({ filter = "all", members = [], hideInactive = 
   };
 
   const handleDelete = async (id) => {
+    const memberToDelete = localMembers.find(m => (m._id || m.id) === id);
     if (!confirm("Are you sure you want to delete this member?")) return;
     await fetch(`/api/members/${id}`, { method: 'DELETE' });
     setLocalMembers(prev => prev.filter(m => (m._id || m.id) !== id));
+    if (onDelete && memberToDelete) onDelete(memberToDelete);
   };
 
-  const handleStatusChange = async (id, status) => {
+  const handleStatusChange = async (id, newStatus) => {
+    const oldStatus = localMembers.find(m => (m._id || m.id) === id)?.status;
     await fetch(`/api/members/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status: newStatus })
     });
-    setLocalMembers(prev => prev.map(m => (m._id || m.id) === id ? { ...m, status } : m));
+    setLocalMembers(prev => prev.map(m => (m._id || m.id) === id ? { ...m, status: newStatus } : m));
+    if (onStatusChange && oldStatus) onStatusChange(id, oldStatus, newStatus);
   };
 
   if (loading) {

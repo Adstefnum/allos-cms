@@ -61,6 +61,37 @@ export default function Dashboard() {
   const totalMembersCount = members.length;
   const displayedCount = hideInactive ? activeMembersCount : totalMembersCount;
 
+  // Local stat adjustment handlers
+  const handleMemberDelete = (deletedMember) => {
+    setData(prev => {
+      const newMembers = prev.members.filter(m => (m._id || m.id) !== (deletedMember._id || deletedMember.id));
+      // Recalculate stats based on newMembers
+      const presentCount = newMembers.filter(m => m.status !== 'Inactive' && m.attendanceHistory?.some(a => a.present)).length;
+      const followUpCount = newMembers.filter(m => m.status === 'Needs Follow-up').length;
+      return {
+        ...prev,
+        members: newMembers,
+        presentCount,
+        followUpCount,
+      };
+    });
+  };
+
+  const handleStatusChange = (id, oldStatus, newStatus) => {
+    setData(prev => {
+      const newMembers = prev.members.map(m => (m._id || m.id) === id ? { ...m, status: newStatus } : m);
+      // Recalculate stats based on newMembers
+      const presentCount = newMembers.filter(m => m.status !== 'Inactive' && m.attendanceHistory?.some(a => a.present)).length;
+      const followUpCount = newMembers.filter(m => m.status === 'Needs Follow-up').length;
+      return {
+        ...prev,
+        members: newMembers,
+        presentCount,
+        followUpCount,
+      };
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -130,7 +161,15 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="all" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
+                  <MembersDataTable
+                    filter="all"
+                    members={members}
+                    hideInactive={hideInactive}
+                    setHideInactive={setHideInactive}
+                    loading={loading}
+                    onDelete={handleMemberDelete}
+                    onStatusChange={handleStatusChange}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
@@ -145,7 +184,15 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="new" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
+                  <MembersDataTable
+                    filter="new"
+                    members={members}
+                    hideInactive={hideInactive}
+                    setHideInactive={setHideInactive}
+                    loading={loading}
+                    onDelete={handleMemberDelete}
+                    onStatusChange={handleStatusChange}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
@@ -160,7 +207,15 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<MembersTableSkeleton />}>
-                  <MembersDataTable filter="followup" members={members} hideInactive={hideInactive} setHideInactive={setHideInactive} loading={loading} />
+                  <MembersDataTable
+                    filter="followup"
+                    members={members}
+                    hideInactive={hideInactive}
+                    setHideInactive={setHideInactive}
+                    loading={loading}
+                    onDelete={handleMemberDelete}
+                    onStatusChange={handleStatusChange}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
