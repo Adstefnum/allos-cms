@@ -19,35 +19,33 @@ import {
   Edit
 } from "lucide-react";
 
-export default function MemberProfile({ memberId }) {
-  const [newNote, setNewNote] = useState("");
+export default function MemberProfile({ member }) {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [member, setMember] = useState(null);
+  const [editData, setEditData] = useState(member);
+  const [saving, setSaving] = useState(false);
+  const [newNote, setNewNote] = useState("");
 
   useEffect(() => {
-    const fetchMember = async () => {
-      const res = await fetch(`/api/members/${memberId}`);
-      const data = await res.json();
-      setMember(data);
-    }
-    fetchMember();
-  }, [memberId]);
+    setEditData(member);
+  }, [member]);
 
-  if (!member) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Member Not Found</h2>
-          <Link href="/dashboard">
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const res = await fetch(`/api/members/${member._id || member.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editData)
+    });
+    const updated = await res.json();
+    setEditData(updated);
+    setIsEditMode(false);
+    setSaving(false);
+  };
 
   const attendanceRate = member.attendanceHistory && member.attendanceHistory.length > 0
     ? Math.round(
@@ -78,12 +76,12 @@ export default function MemberProfile({ memberId }) {
   };
 
   const handleSaveNote = async () => {
-    const res = await fetch(`/api/members/${memberId}`, {
+    const res = await fetch(`/api/members/${member._id || member.id}`, {
       method: 'PATCH',
       body: JSON.stringify({ notes: [...member.notes, { content: newNote, date: new Date().toISOString() }] })
     });
     const data = await res.json();
-    setMember(data);
+    setEditData(data);
     setNewNote("");
   }
   return (
@@ -100,21 +98,46 @@ export default function MemberProfile({ memberId }) {
           
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{member.name}</h1>
-              <p className="text-gray-600 mt-1">Member since {formatDate(member.joinDate)}</p>
+              {isEditMode ? (
+                <Input name="name" value={editData.name} onChange={handleEditChange} className="text-3xl font-bold text-gray-900" placeholder="Full Name" />
+              ) : (
+                <h1 className="text-3xl font-bold text-gray-900">{editData.name}</h1>
+              )}
+              <p className="text-gray-600 mt-1">
+                Member since {isEditMode ? (
+                  <Input name="joinDate" type="date" value={editData.joinDate || ""} onChange={handleEditChange} className="inline w-auto ml-2" placeholder="Join Date" />
+                ) : (
+                  formatDate(editData.joinDate)
+                )}
+              </p>
             </div>
             <div className="flex items-center gap-3">
-              <Badge className={getStatusColor(member.status)}>
-                {member.status}
-              </Badge>
+              {isEditMode ? (
+                <select name="status" value={editData.status} onChange={handleEditChange} className="border rounded px-2 py-1" placeholder="Status">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Needs Follow-up">Needs Follow-up</option>
+                  <option value="New">New</option>
+                </select>
+              ) : (
+                <Badge className={getStatusColor(editData.status)}>
+                  {editData.status}
+                </Badge>
+              )}
               <Button 
                 variant="outline" 
                 onClick={() => setIsEditMode(!isEditMode)}
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                disabled={saving}
               >
                 <Edit className="mr-2 h-4 w-4" />
-                {isEditMode ? "Cancel Edit" : "Edit Member"}
+                {isEditMode ? "Cancel" : "Edit Member"}
               </Button>
+              {isEditMode && (
+                <Button onClick={handleSave} className="bg-blue-600 text-white" disabled={saving}>
+                  {saving ? "Saving..." : "Save"}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -133,19 +156,35 @@ export default function MemberProfile({ memberId }) {
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{member.email}</span>
+                  {isEditMode ? (
+                    <Input name="email" value={editData.email || ""} onChange={handleEditChange} placeholder="Email" />
+                  ) : (
+                    <span className="text-gray-900">{editData.email}</span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{member.phone}</span>
+                  {isEditMode ? (
+                    <Input name="phone" value={editData.phone || ""} onChange={handleEditChange} placeholder="Phone Number" />
+                  ) : (
+                    <span className="text-gray-900">{editData.phone}</span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">{member.address}</span>
+                  {isEditMode ? (
+                    <Input name="address" value={editData.address || ""} onChange={handleEditChange} placeholder="Address" />
+                  ) : (
+                    <span className="text-gray-900">{editData.address}</span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-900">Last attended: {formatDate(member.lastAttendance)}</span>
+                  {isEditMode ? (
+                    <Input name="lastAttendance" type="date" value={editData.lastAttendance || ""} onChange={handleEditChange} placeholder="Last Attendance" />
+                  ) : (
+                    <span className="text-gray-900">Last attended: {formatDate(editData.lastAttendance)}</span>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -158,11 +197,19 @@ export default function MemberProfile({ memberId }) {
               <CardContent className="space-y-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Assigned To</Label>
-                  <p className="text-lg font-medium text-blue-600">{member.assignedTo}</p>
+                  {isEditMode ? (
+                    <Input name="assignedTo" value={editData.assignedTo || ""} onChange={handleEditChange} placeholder="Assigned To" />
+                  ) : (
+                    <p className="text-lg font-medium text-blue-600">{editData.assignedTo}</p>
+                  )}
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Last Contact</Label>
-                  <p className="text-gray-900">{formatDate(member.lastContact)}</p>
+                  {isEditMode ? (
+                    <Input name="lastContact" type="date" value={editData.lastContact || ""} onChange={handleEditChange} placeholder="Last Contact" />
+                  ) : (
+                    <p className="text-gray-900">{formatDate(editData.lastContact)}</p>
+                  )}
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Attendance Rate</Label>
